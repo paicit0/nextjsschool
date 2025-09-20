@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@apollo/client": "^4.0.5",
     "antd": "^5.27.4",
     "graphql": "^16.11.0",
