@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
 
 const GET_STUDENTS = gql`
   query GetStudents {
@@ -15,7 +15,14 @@ const GET_STUDENTS = gql`
   }
 `;
 
-// const ADD_STUDENT = gql``;
+const ADD_STUDENT = gql`
+  mutation CreateStudent($firstname: String!, $lastname: String!) {
+    createStudent(firstname: $firstname, lastname: $lastname) {
+      firstname
+      lastname
+    }
+  }
+`;
 
 type Student = {
   studentid: string;
@@ -32,6 +39,14 @@ export default function Students() {
   const [editMode, setEditMode] = useState(false);
   const [search, setSearch] = useState("");
   const { loading, error, data } = useQuery<GetStudentsResponse>(GET_STUDENTS);
+  const [newStudent, setNewStudent] = useState({
+    firstname: "",
+    lastname: "",
+  });
+  const [createStudent, { loading: addingStudent }] = useMutation(ADD_STUDENT, {
+    refetchQueries: [GET_STUDENTS],
+  });
+
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
   useEffect(() => {
