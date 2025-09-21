@@ -44,8 +44,11 @@ export const UPDATE_STUDENT = gql`
   mutation UpdateStudent($updateStudentInput: UpdateStudentInput!) {
     updateStudent(updateStudentInput: $updateStudentInput) {
       studentid
+      prefixid
       firstname
       lastname
+      genderid
+      gradelevelid
     }
   }
 `;
