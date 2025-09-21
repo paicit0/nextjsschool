@@ -24,6 +24,16 @@ const ADD_STUDENT = gql`
   }
 `;
 
+const DELETE_STUDENT = gql`
+  mutation DeleteStudent($studentid: Float!) {
+    deleteStudent(studentid: $studentid)
+  }
+`;
+
+const UPDATE_STUDENT = gql`
+
+`;
+
 type Student = {
   studentid: string;
   firstname: string;
@@ -46,6 +56,13 @@ export default function Students() {
   const [createStudent, { loading: addingStudent }] = useMutation(ADD_STUDENT, {
     refetchQueries: [GET_STUDENTS],
   });
+
+  const [deleteStudent, { loading: deletingStudent }] = useMutation(
+    DELETE_STUDENT,
+    {
+      refetchQueries: [GET_STUDENTS],
+    }
+  );
 
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
@@ -79,6 +96,12 @@ export default function Students() {
       variables: {
         createStudentInput: { firstname, lastname },
       },
+    });
+  };
+
+  const handleDeleteStudent = (studentId: number) => {
+    deleteStudent({
+      variables: { studentid: studentId },
     });
   };
 
@@ -125,7 +148,16 @@ export default function Students() {
                   </div>
                 )}
               </div>
-              {editMode && <Button type="primary">Delete</Button>}
+              {editMode && (
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    handleDeleteStudent(parseFloat(student.studentid));
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
             </div>
           ))}
           <div>
