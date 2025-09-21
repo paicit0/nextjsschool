@@ -44,10 +44,12 @@ export default function Students() {
       if (search) {
         const filtered = students.filter(
           (student) =>
+            student.studentid.startsWith(search) ||
+            (student.prefix?.prefixname ?? "").startsWith(search) ||
             student.firstname.toLowerCase().includes(search.toLowerCase()) ||
             student.lastname.toLowerCase().includes(search.toLowerCase()) ||
-            student.studentid.startsWith(search) ||
-            (student.gradelevelid ?? "").toString().startsWith(search)
+            (student.gender?.gendername ?? "").startsWith(search) ||
+            (student.gradelevel?.levelname ?? "").startsWith(search)
         );
         setFilteredStudents(filtered);
       } else {
@@ -73,6 +75,21 @@ export default function Students() {
   const handleDeleteStudent = (studentId: number) => {
     deleteStudent({
       variables: { studentid: studentId },
+    });
+  };
+
+  const handleUpdateStudent = (student: Student) => {
+    updateStudent({
+      variables: {
+        updateStudentInput: {
+          studentid: 0,
+          prefixid: 0,
+          firstname: "a",
+          lastname: "a",
+          genderid: 0,
+          gradelevelid: 0,
+        },
+      },
     });
   };
 
@@ -107,7 +124,11 @@ export default function Students() {
                 {editMode ? (
                   <div className="flex flex-row gap-5">
                     <input type="text" value={student.prefixid} />
-                    <input type="text" value={student.firstname} />
+                    <input
+                      type="text"
+                      value={student.firstname}
+                      onChange={(e) => e}
+                    />
                     <input type="text" value={student.lastname} />
                     <input type="text" value={student.genderid} />
                     <input type="text" value={student.gradelevelid} />
@@ -124,7 +145,14 @@ export default function Students() {
               </div>
               {editMode && (
                 <div className="flex flex-row gap-5">
-                  <Button type="primary">Edit</Button>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      handleUpdateStudent(student);
+                    }}
+                  >
+                    Update
+                  </Button>
                   <Button
                     type="primary"
                     onClick={() => {
