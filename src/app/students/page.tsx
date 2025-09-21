@@ -1,83 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
-import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
-
-const GET_STUDENTS = gql`
-  query GetStudents {
-    findAllStudents {
-      studentid
-      prefixid
-      firstname
-      lastname
-      genderid
-      gradelevelid
-      prefix {
-        prefixid
-        prefixname
-      }
-      gender {
-        genderid
-        gendername
-      }
-      gradelevel {
-        gradelevelid
-        levelname
-      }
-    }
-  }
-`;
-
-const ADD_STUDENT = gql`
-  mutation CreateStudent($createStudentInput: CreateStudentInput!) {
-    createStudent(createStudentInput: $createStudentInput) {
-      firstname
-      lastname
-    }
-  }
-`;
-
-const DELETE_STUDENT = gql`
-  mutation DeleteStudent($studentid: Float!) {
-    deleteStudent(studentid: $studentid)
-  }
-`;
-
-const UPDATE_STUDENT = gql`
-  mutation UpdateStudent($updateStudentInput: UpdateStudentInput!) {
-    updateStudent(updateStudentInput: $updateStudentInput) {
-      studentid
-      firstname
-      lastname
-    }
-  }
-`;
-
-type Student = {
-  studentid: string;
-  prefixid: number;
-  firstname: string;
-  lastname: string;
-  genderid: string;
-  gradelevelid: number;
-  prefix: {
-    prefixid: number;
-    prefixname: string;
-  };
-  gender: {
-    genderid: number;
-    gendername: string;
-  };
-  gradelevel: {
-    gradelevelid: number;
-    levelname: string;
-  };
-};
-
-type GetStudentsResponse = {
-  findAllStudents: Student[];
-};
+import {
+  ADD_STUDENT,
+  DELETE_STUDENT,
+  GET_STUDENTS,
+  UPDATE_STUDENT,
+} from "../graphql/queries";
+import { Student, GetStudentsResponse } from "../types/types";
 
 export default function Students() {
   const [editMode, setEditMode] = useState(false);
@@ -183,23 +114,26 @@ export default function Students() {
                   </div>
                 ) : (
                   <div className="flex flex-row gap-5">
-                    <div>{student.prefix?.prefixname ?? 'null'}</div>
+                    <div>{student.prefix?.prefixname ?? "null"}</div>
                     <div>{student.firstname}</div>
                     <div>{student.lastname}</div>
-                    <div>{student.gender?.gendername ?? 'null'}</div>
-                    <div>{student.gradelevel?.levelname ?? 'null'}</div>
+                    <div>{student.gender?.gendername ?? "null"}</div>
+                    <div>{student.gradelevel?.levelname ?? "null"}</div>
                   </div>
                 )}
               </div>
               {editMode && (
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    handleDeleteStudent(parseFloat(student.studentid));
-                  }}
-                >
-                  Delete
-                </Button>
+                <div className="flex flex-row gap-5">
+                  <Button type="primary">Edit</Button>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      handleDeleteStudent(parseFloat(student.studentid));
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
               )}
             </div>
           ))}
