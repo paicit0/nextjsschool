@@ -8,9 +8,23 @@ const GET_STUDENTS = gql`
   query GetStudents {
     findAllStudents {
       studentid
+      prefixid
       firstname
       lastname
+      genderid
       gradelevelid
+      prefix {
+        prefixid
+        prefixname
+      }
+      gender {
+        genderid
+        gendername
+      }
+      gradelevel {
+        gradelevelid
+        levelname
+      }
     }
   }
 `;
@@ -31,14 +45,34 @@ const DELETE_STUDENT = gql`
 `;
 
 const UPDATE_STUDENT = gql`
-
+  mutation UpdateStudent($updateStudentInput: UpdateStudentInput!) {
+    updateStudent(updateStudentInput: $updateStudentInput) {
+      studentid
+      firstname
+      lastname
+    }
+  }
 `;
 
 type Student = {
   studentid: string;
+  prefixid: number;
   firstname: string;
   lastname: string;
+  genderid: string;
   gradelevelid: number;
+  prefix: {
+    prefixid: number;
+    prefixname: string;
+  };
+  gender: {
+    genderid: number;
+    gendername: string;
+  };
+  gradelevel: {
+    gradelevelid: number;
+    levelname: string;
+  };
 };
 
 type GetStudentsResponse = {
@@ -63,6 +97,12 @@ export default function Students() {
       refetchQueries: [GET_STUDENTS],
     }
   );
+  const [updateStudent, { loading: updatingStudent }] = useMutation(
+    UPDATE_STUDENT,
+    {
+      refetchQueries: [GET_STUDENTS],
+    }
+  );
 
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
@@ -76,7 +116,7 @@ export default function Students() {
             student.firstname.toLowerCase().includes(search.toLowerCase()) ||
             student.lastname.toLowerCase().includes(search.toLowerCase()) ||
             student.studentid.startsWith(search) ||
-            student.gradelevelid.toString().startsWith(search)
+            (student.gradelevelid ?? "").toString().startsWith(search)
         );
         setFilteredStudents(filtered);
       } else {
@@ -133,18 +173,21 @@ export default function Students() {
             <div className="flex flex-row" key={student.studentid}>
               <div className="flex flex-row gap-5">
                 <div>{student.studentid}</div>
-
                 {editMode ? (
                   <div className="flex flex-row gap-5">
+                    <input type="text" value={student.prefixid} />
                     <input type="text" value={student.firstname} />
                     <input type="text" value={student.lastname} />
+                    <input type="text" value={student.genderid} />
                     <input type="text" value={student.gradelevelid} />
                   </div>
                 ) : (
                   <div className="flex flex-row gap-5">
+                    <div>{student.prefix?.prefixname ?? 'null'}</div>
                     <div>{student.firstname}</div>
                     <div>{student.lastname}</div>
-                    <div>{student.gradelevelid}</div>
+                    <div>{student.gender?.gendername ?? 'null'}</div>
+                    <div>{student.gradelevel?.levelname ?? 'null'}</div>
                   </div>
                 )}
               </div>
