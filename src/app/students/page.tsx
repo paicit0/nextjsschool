@@ -16,8 +16,8 @@ const GET_STUDENTS = gql`
 `;
 
 const ADD_STUDENT = gql`
-  mutation CreateStudent($firstname: String!, $lastname: String!) {
-    createStudent(firstname: $firstname, lastname: $lastname) {
+  mutation CreateStudent($createStudentInput: CreateStudentInput!) {
+    createStudent(createStudentInput: $createStudentInput) {
       firstname
       lastname
     }
@@ -68,7 +68,19 @@ export default function Students() {
     }
   }, [data, search]);
 
-  const handleAddStudent = (firstname: string, lastname: string) => {};
+  const handleAddStudent = ({
+    firstname,
+    lastname,
+  }: {
+    firstname: string;
+    lastname: string;
+  }) => {
+    createStudent({
+      variables: {
+        createStudentInput: { firstname, lastname },
+      },
+    });
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -117,10 +129,23 @@ export default function Students() {
             </div>
           ))}
           <div>
-            <input type="text" placeholder="First Name" />
-            <input type="text" placeholder="Last Name" />
-            <Button>Add</Button>
+            <input
+              type="text"
+              placeholder="First Name"
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, firstname: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, lastname: e.target.value })
+              }
+            />
+            <Button onClick={() => handleAddStudent(newStudent)}>Add</Button>
           </div>
+          {addingStudent && <p>Adding student...</p>}
         </div>
       </div>
     </>
