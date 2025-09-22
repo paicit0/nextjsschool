@@ -149,6 +149,7 @@ export default function Students() {
                     <select
                       id="prefix"
                       name="prefixid"
+                      value={currentStudent.prefixid}
                       onChange={(e) => {
                         const updatedStudent = {
                           ...currentStudent,
@@ -187,6 +188,7 @@ export default function Students() {
                     <select
                       id="gender"
                       name="genderid"
+                      value={currentStudent.genderid}
                       onChange={(e) => {
                         const updatedStudent = {
                           ...currentStudent,
@@ -198,7 +200,18 @@ export default function Students() {
                       <option value="1">ชาย</option>
                       <option value="2">หญิง</option>
                     </select>
-                    <select id="grade" name="gradelevelid">
+                    <select
+                      id="grade"
+                      name="gradelevelid"
+                      value={currentStudent.gradelevelid}
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          gradelevelid: parseInt(e.target.value),
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
+                    >
                       <option value="1">ป.1</option>
                       <option value="2">ป.2</option>
                       <option value="3">ป.3</option>
