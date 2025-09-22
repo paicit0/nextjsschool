@@ -12,7 +12,6 @@ import {
 import { Student, GetStudentsResponse } from "../types/types";
 
 export default function Students() {
-  const [editMode, setEditMode] = useState(false);
   const [search, setSearch] = useState("");
   const [newStudent, setNewStudent] = useState<{
     firstname: string;
@@ -117,7 +116,6 @@ export default function Students() {
 
   const handleCancelEdit = () => {
     setCurrentStudent(null);
-    setEditMode(false);
   };
 
   if (loading) return <p>Loading...</p>;
