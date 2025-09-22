@@ -220,7 +220,7 @@ export default function Students() {
                       <option value="8">ม.2</option>
                       <option value="9">ม.3</option>
                     </select>
-                    <input
+                    {/* <input
                       type="text"
                       value={currentStudent.classroomid}
                       onChange={(e) => {
@@ -230,7 +230,7 @@ export default function Students() {
                         };
                         setCurrentStudent(updatedStudent);
                       }}
-                    />
+                    /> */}
                   </div>
                   <Button onClick={() => handleCancelEdit()}>Cancel</Button>
                   <Button
@@ -258,7 +258,7 @@ export default function Students() {
                     <div>{student.lastname}</div>
                     <div>{student.gender?.gendername ?? "null"}</div>
                     <div>{student.gradelevel?.levelname ?? "null"}</div>
-                    <div>{student.classroomid ?? "null"}</div>
+                    {/* <div>{student.classroomid ?? "null"}</div> */}
                   </div>
 
                   <Button
