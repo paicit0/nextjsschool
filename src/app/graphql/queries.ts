@@ -1,3 +1,4 @@
+// queries.ts
 import { gql } from "@apollo/client";
 
 export const GET_STUDENTS = gql`
@@ -9,6 +10,7 @@ export const GET_STUDENTS = gql`
       lastname
       genderid
       gradelevelid
+      classroomid
       prefix {
         prefixid
         prefixname
@@ -49,6 +51,7 @@ export const UPDATE_STUDENT = gql`
       lastname
       genderid
       gradelevelid
+      classroomid
     }
   }
 `;
