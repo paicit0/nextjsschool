@@ -1,3 +1,4 @@
+// students/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
@@ -13,38 +14,52 @@ import { Student, GetStudentsResponse } from "../types/types";
 export default function Students() {
   const [editMode, setEditMode] = useState(false);
   const [search, setSearch] = useState("");
-  const { loading, error, data } = useQuery<GetStudentsResponse>(GET_STUDENTS);
-  const [newStudent, setNewStudent] = useState({
+  const [newStudent, setNewStudent] = useState<{
+    firstname: string;
+    lastname: string;
+  }>({
     firstname: "",
     lastname: "",
   });
+  const [currentStudent, setCurrentStudent] = useState<Student | null>(null);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+
+  const { loading, error, data } = useQuery<GetStudentsResponse>(GET_STUDENTS);
   const [createStudent, { loading: addingStudent }] = useMutation(ADD_STUDENT, {
     refetchQueries: [GET_STUDENTS],
+    onError: (error) => {
+      console.error("Error adding student:", error);
+    },
   });
 
   const [deleteStudent, { loading: deletingStudent }] = useMutation(
     DELETE_STUDENT,
     {
       refetchQueries: [GET_STUDENTS],
+      onError: (error) => {
+        console.error("Error deleting student:", error);
+      },
     }
   );
   const [updateStudent, { loading: updatingStudent }] = useMutation(
     UPDATE_STUDENT,
     {
       refetchQueries: [GET_STUDENTS],
+      onError: (error) => {
+        console.error("Error updating student:", error);
+      },
     }
   );
-
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     if (data?.findAllStudents) {
       const students = data.findAllStudents;
+      console.log("Fetched students:", students);
 
       if (search) {
         const filtered = students.filter(
           (student) =>
-            student.studentid.startsWith(search) ||
+            student.studentid.toString().startsWith(search) ||
             (student.prefix?.prefixname ?? "").startsWith(search) ||
             student.firstname.toLowerCase().includes(search.toLowerCase()) ||
             student.lastname.toLowerCase().includes(search.toLowerCase()) ||
@@ -57,6 +72,10 @@ export default function Students() {
       }
     }
   }, [data, search]);
+
+  useEffect(() => {
+    console.log("currentstudent:", currentStudent);
+  }, [currentStudent]);
 
   const handleAddStudent = ({
     firstname,
@@ -79,18 +98,26 @@ export default function Students() {
   };
 
   const handleUpdateStudent = (student: Student) => {
+    console.log("Updating student:", student);
     updateStudent({
       variables: {
         updateStudentInput: {
-          studentid: 0,
-          prefixid: 0,
-          firstname: "a",
-          lastname: "a",
-          genderid: 0,
-          gradelevelid: 0,
+          studentid: parseInt(student.studentid),
+          prefixid: student.prefixid,
+          firstname: student.firstname,
+          lastname: student.lastname,
+          genderid: student.genderid,
+          gradelevelid: student.gradelevelid,
+          classroomid: student.classroomid,
         },
       },
     });
+    setCurrentStudent(null);
+  };
+
+  const handleCancelEdit = () => {
+    setCurrentStudent(null);
+    setEditMode(false);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -108,47 +135,97 @@ export default function Students() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button
-          type="primary"
-          onClick={() => {
-            editMode ? setEditMode(false) : setEditMode(true);
-          }}
-        >
-          Edit
-        </Button>
+
         <div>
           {filteredStudents.map((student) => (
             <div className="flex flex-row" key={student.studentid}>
               <div className="flex flex-row gap-5">
                 <div>{student.studentid}</div>
-                {editMode ? (
+              </div>
+
+              {currentStudent?.studentid === student.studentid ? (
+                <>
                   <div className="flex flex-row gap-5">
-                    <input type="text" value={student.prefixid} />
+                    <select
+                      id="prefix"
+                      name="prefixid"
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          prefixid: parseInt(e.target.value),
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
+                    >
+                      <option value="1">ด.ช.</option>
+                      <option value="2">ด.ญ.</option>
+                      <option value="3">นาย</option>
+                      <option value="4">นางสาว</option>
+                    </select>
                     <input
                       type="text"
-                      value={student.firstname}
-                      onChange={(e) => e}
+                      value={currentStudent.firstname}
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          firstname: e.target.value,
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
                     />
-                    <input type="text" value={student.lastname} />
-                    <input type="text" value={student.genderid} />
-                    <input type="text" value={student.gradelevelid} />
+                    <input
+                      type="text"
+                      value={currentStudent.lastname}
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          lastname: e.target.value,
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
+                    />
+                    <select
+                      id="gender"
+                      name="genderid"
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          genderid: parseInt(e.target.value),
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
+                    >
+                      <option value="1">ชาย</option>
+                      <option value="2">หญิง</option>
+                    </select>
+                    <select id="grade" name="gradelevelid">
+                      <option value="1">ป.1</option>
+                      <option value="2">ป.2</option>
+                      <option value="3">ป.3</option>
+                      <option value="4">ป.4</option>
+                      <option value="5">ป.5</option>
+                      <option value="6">ป.6</option>
+                      <option value="7">ม.1</option>
+                      <option value="8">ม.2</option>
+                      <option value="9">ม.3</option>
+                    </select>
+                    <input
+                      type="text"
+                      value={currentStudent.classroomid}
+                      onChange={(e) => {
+                        const updatedStudent = {
+                          ...currentStudent,
+                          classroomid: parseInt(e.target.value),
+                        };
+                        setCurrentStudent(updatedStudent);
+                      }}
+                    />
                   </div>
-                ) : (
-                  <div className="flex flex-row gap-5">
-                    <div>{student.prefix?.prefixname ?? "null"}</div>
-                    <div>{student.firstname}</div>
-                    <div>{student.lastname}</div>
-                    <div>{student.gender?.gendername ?? "null"}</div>
-                    <div>{student.gradelevel?.levelname ?? "null"}</div>
-                  </div>
-                )}
-              </div>
-              {editMode && (
-                <div className="flex flex-row gap-5">
+                  <Button onClick={() => handleCancelEdit()}>Cancel</Button>
                   <Button
                     type="primary"
                     onClick={() => {
-                      handleUpdateStudent(student);
+                      handleUpdateStudent(currentStudent);
                     }}
                   >
                     Update
@@ -156,12 +233,32 @@ export default function Students() {
                   <Button
                     type="primary"
                     onClick={() => {
-                      handleDeleteStudent(parseFloat(student.studentid));
+                      handleDeleteStudent(parseInt(student.studentid));
                     }}
                   >
                     Delete
                   </Button>
-                </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-row gap-5">
+                    <div>{student.prefix?.prefixname ?? "null"}</div>
+                    <div>{student.firstname}</div>
+                    <div>{student.lastname}</div>
+                    <div>{student.gender?.gendername ?? "null"}</div>
+                    <div>{student.gradelevel?.levelname ?? "null"}</div>
+                    <div>{student.classroomid ?? "null"}</div>
+                  </div>
+
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setCurrentStudent(student);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </>
               )}
             </div>
           ))}
