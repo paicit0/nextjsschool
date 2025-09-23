@@ -431,6 +431,7 @@ export default function Students() {
                   color="green"
                   icon={<PlusOutlined />}
                   onClick={() => handleAddStudent(newStudent)}
+                  disabled={!newStudent.firstname || !newStudent.lastname || addingStudent}
                   className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center space-x-2 font-medium"
                 >
                   <div>Add Student</div>

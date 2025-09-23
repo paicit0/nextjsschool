@@ -431,7 +431,7 @@ export default function Classrooms() {
                     color="green"
                     icon={<PlusOutlined />}
                     onClick={() => handleAddClassroom(newClassroom)}
-                    disabled={!newClassroom.homeroom_teacher}
+                    disabled={!newClassroom.homeroom_teacher || addingClassroom}
                     className=" text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed w-full md:w-auto"
                   >
                     Add Classroom
