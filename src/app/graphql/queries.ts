@@ -102,6 +102,7 @@ export const GET_CLASSROOM_STUDENTS = gql`
     findClassroom(classroomid: $id) {
       classroomid
       academicyear
+      classroom
       room_name
       homeroom_teacher
       students {
