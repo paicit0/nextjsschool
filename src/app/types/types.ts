@@ -30,9 +30,18 @@ export type Classroom = {
   academicyear: number;
   room_name: number;
   homeroom_teacher: string;
-  classroom: Student[];
+  classroom: number;
 };
 
 export type GetClassroomsResponse = {
   findAllClassrooms: Classroom[];
+};
+
+export type ClassroomData = {
+  findClassroom?: {
+    room_name?: number;
+    classroom?: number;
+    homeroom_teacher?: string;
+    students?: Student[];
+  };
 };
