@@ -92,15 +92,18 @@ export default function Classrooms() {
     academicyear,
     room_name,
     homeroom_teacher,
+    classroom,
   }: {
     academicyear: number;
     room_name: number;
     homeroom_teacher: string;
+    classroom: number;
   }) => {
     console.log("Adding classroom:", {
       academicyear,
       room_name,
       homeroom_teacher,
+      classroom,
     });
     createClassroom({
       variables: {
@@ -108,6 +111,7 @@ export default function Classrooms() {
           academicyear,
           room_name,
           homeroom_teacher,
+          classroom,
         },
       },
     });
@@ -221,19 +225,6 @@ export default function Classrooms() {
                       placeholder="Homeroom Teacher"
                       className="px-2 py-1 border rounded"
                     />
-                    {/* <input
-                      type="text"
-                      value={currentClassroom.classroom}
-                      onChange={(e) => {
-                        const updatedClassroom = {
-                          ...currentClassroom,
-                          classroom: e.target.value,
-                        };
-                        setCurrentClassroom(updatedClassroom);
-                      }}
-                      placeholder="Homeroom Teacher"
-                      className="px-2 py-1 border rounded"
-                    /> */}
                   </div>
                   <Button onClick={() => handleCancelEdit()}>Cancel</Button>
                   <Button
@@ -258,13 +249,14 @@ export default function Classrooms() {
                 <>
                   <div className="flex flex-row gap-5">
                     <div>ปีการศึกษา: {classroom.academicyear}</div>
-                    <div>ห้อง: {classroom.room_name}</div>
+                    <div>เลขที่ห้อง: {classroom.classroom}</div>
+                    <div>ชื่อห้อง: {classroom.room_name}</div>
                     <div>
                       ครูประจำชั้น: {classroom.homeroom_teacher || "ไม่ระบุ"}
                     </div>
                     {/* <div>จำนวนนักเรียน: {classroom.classroom?.length || 0}</div> */}
                   </div>
-                  <Link href={'/classrooms/' + classroom.classroomid}>
+                  <Link href={"/classrooms/" + classroom.classroomid}>
                     <Button>View</Button>
                   </Link>
 
@@ -294,6 +286,28 @@ export default function Classrooms() {
               }
               className="px-2 py-1 border rounded"
             />
+            <div>เลขที่ห้อง</div>
+            <select
+              value={newClassroom.classroom}
+              onChange={(e) =>
+                setNewClassroom({
+                  ...newClassroom,
+                  classroom: parseInt(e.target.value),
+                })
+              }
+              className="px-2 py-1 border rounded"
+            >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+            </select>
+            <div>ชื่อห้อง</div>
             <select
               value={newClassroom.room_name}
               onChange={(e) =>
