@@ -7,23 +7,16 @@ import {
   DELETE_STUDENT_FROM_CLASSROOM,
 } from "../../graphql/queries";
 import { useParams } from "next/navigation";
-import { Student } from "../../types/types";
+import { ClassroomData, Student } from "../../types/types";
 import { Button } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Classroom() {
   const [addStudentId, setAddStudentId] = useState("");
   const params = useParams();
   const classroomid = params.classroomid;
   const classroomIdNum = Number(classroomid);
-
-  type ClassroomData = {
-    findClassroom?: {
-      room_name?: string;
-      homeroom_teacher?: string;
-      students?: Student[];
-    };
-  };
+  const [currentStudentId, setCurrentStudentId] = useState<number | null>(null);
 
   const { loading, error, data } = useQuery<ClassroomData>(
     GET_CLASSROOM_STUDENTS,
@@ -50,7 +43,9 @@ export default function Classroom() {
     },
   });
 
-  console.log("GraphQL data:", data);
+  useEffect(() => {
+    console.log("GraphQL data:", data);
+  }, [data]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -86,26 +81,58 @@ export default function Classroom() {
 
   return (
     <>
-      <div>Classroom {classroomIdNum}</div>
+      <div>ClassroomId: {classroomIdNum}</div>
       <div>
-        <h2>{classroom?.room_name}</h2>
+
+        <h2>เลขห้อง: {classroom?.classroom}</h2>
+        <h2>ชื่อห้อง: {classroom?.room_name}</h2>
         <p>Teacher: {classroom?.homeroom_teacher}</p>
-        <h3>Students:</h3>
+        <h3>Student count: {students.length}</h3>
         {students.length > 0 ? (
           <ul>
-            {students.map((student: any) => (
-              <div className="flex flex-row">
-                <li key={student.studentid}>
-                  StudentID: {student.studentid} First Name: {student.firstname}
-                  Last Name: {student.lastname}
-                </li>
-                <Button>Edit</Button>
-              </div>
-            ))}
+            {students.map((student: any) =>
+              currentStudentId === student.studentid ? (
+                <div className="flex flex-row" key={student.studentid}>
+                  <li>
+                    StudentID: {student.studentid} First Name:{" "}
+                    {student.firstname}
+                    Last Name: {student.lastname}
+                    Classroom:{student.classroomid}
+                  </li>
+                  <Button onClick={() => setCurrentStudentId(null)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      handleDeleteStudentFromClassroom(
+                        student.studentid,
+                        classroomIdNum.toString()
+                      )
+                    }
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-row" key={student.studentid}>
+                  <li>
+                    StudentID: {student.studentid} First Name:
+                    {student.firstname}
+                    Last Name: {student.lastname}
+                  </li>
+                  <Button
+                    onClick={() => setCurrentStudentId(student.studentid)}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              )
+            )}
           </ul>
         ) : (
           <p>No students found</p>
         )}
+
         <input
           type="text"
           placeholder="Student ID"
