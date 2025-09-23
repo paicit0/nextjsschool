@@ -30,8 +30,11 @@ export const GET_STUDENTS = gql`
 export const ADD_STUDENT = gql`
   mutation CreateStudent($createStudentInput: CreateStudentInput!) {
     createStudent(createStudentInput: $createStudentInput) {
+      prefixid
       firstname
       lastname
+      genderid
+      gradelevelid
     }
   }
 `;
